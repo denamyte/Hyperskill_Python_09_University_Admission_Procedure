@@ -3,7 +3,7 @@ hyperskill_project:
   ide_files: https://stepik.org/media/attachments/lesson/493610/additional_files.json
   is_template_based: false
   use_ide: true
-update_date: Tue, 04 May 2021 23:03:15 UTC
+update_date: Wed, 26 May 2021 20:28:21 UTC
 stages:
 - id: 844
   step: 12318
@@ -16,7 +16,7 @@ stages:
   is_completed: true
 - id: 847
   step: 12321
-  is_completed: false
+  is_completed: true
 - id: 848
   step: 12322
   is_completed: false
@@ -101,6 +101,8 @@ topics:
   - title: Sorting a list
     theory_id: 10059
   3:
+  - title: Introduction to operating systems
+    theory_id: 9704
   - title: Files
     theory_id: 13025
   - title: Intro to computational thinking
@@ -124,26 +126,14 @@ topics:
   - title: Operations with dictionary
     theory_id: 11096
   4:
-  - title: Introduction to operating systems
-    theory_id: 9704
   - title: Program execution
     theory_id: 6047
   - title: Load module
     theory_id: 6019
-  - title: Create module
-    theory_id: 6057
-  - title: Packages
-    theory_id: 6384
   - title: Errors
     theory_id: 6052
   - title: Exceptions
     theory_id: 6042
-  - title: Command line overview
-    theory_id: 8977
-  - title: Parameters and options
-    theory_id: 9746
-  - title: Pip
-    theory_id: 6230
   - title: Built-in exceptions
     theory_id: 11680
   - title: Exception handling
@@ -156,5 +146,9 @@ topics:
   6:
   - title: Context manager
     theory_id: 8702
+  - title: Command line overview
+    theory_id: 8977
+  - title: Parameters and options
+    theory_id: 9746
   - title: os module
     theory_id: 11119

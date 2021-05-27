@@ -1,35 +1,74 @@
-from typing import Tuple, List
+from typing import List
 
 
-class AdmissionScores:
-    """Input student and their grades, sort them by the grades and print the admitted ones"""
-    def __init__(self):
-        self.student_count = 0
-        self.admitted_count = 0
-        self.students: List[Tuple[str, float]] = []
+class Applicant:
 
-    def input_data(self):
-        self.student_count = int(input())
-        self.admitted_count = int(input())
-        self.students = [self.input_student() for _ in range(self.student_count)]
+    def __init__(self, raw_data: str):
+        self.name = ''
+        self.gpa = 0.0
+        self.dep: List[int] = []
+        self.assigned_dep = -1
+        self.parse(raw_data)
 
-    @staticmethod
-    def input_student() -> Tuple[str, float]:
-        raw_str = input()
-        last_space_ind = raw_str.rindex(' ')
-        return raw_str[:last_space_ind], float(raw_str[last_space_ind + 1:])
+    def parse(self, raw_data: str):
+        ar_data = raw_data.split(' ')
+        self.name = ' '.join(ar_data[:2])
+        self.gpa = float(ar_data[2])
+        self.dep = [Distribution.dep_names.index(dep_name) for dep_name in ar_data[3:]]
 
-    def sort(self):
-        self.students.sort(key=lambda t: (-t[1], t[0]))
+    def assign_dep(self, dep_ind: int):
+        """
+        Assigns a department to this applicant. Assigning a department means
+        the applicant doesn't participate in further assignment procedures.
+        """
+        self.assigned_dep = dep_ind
 
     def __str__(self):
-        res = ['Successful applicants:']
-        for t in self.students[:self.admitted_count]:
-            res.append(t[0])
-        return '\n'.join(res)
+        return f'{self.name} {self.gpa}'
 
 
-ad_score = AdmissionScores()
-ad_score.input_data()
-ad_score.sort()
-print(ad_score)
+class Distribution:
+    """
+    Input applicant list, assign them into the departments given, according
+    to an applicant's preference and GPA score
+    """
+    dep_names = ['Biotech', 'Chemistry', 'Engineering', 'Mathematics', 'Physics']
+    file_name = 'applicants.txt'
+
+    def __init__(self, dep_capacity: int):
+        self.dep_capacity = dep_capacity
+        self.applicants: List[Applicant] = []
+        self.dep_lists: List[List[Applicant]] = [[] for _ in range(len(self.dep_names))]
+        self.read_applicants()
+        self.distribute()
+
+    def read_applicants(self):
+        with open(self.file_name) as file:
+            self.applicants = [Applicant(line.rstrip('\n')) for line in file.readlines()]
+
+    def distribute(self):
+        for level in range(3):
+            for dep_ind in range(len(self.dep_names)):
+                dep_list = self.dep_lists[dep_ind]
+                if len(dep_list) < self.dep_capacity:
+                    app_list = [app for app in self.applicants if app.assigned_dep == -1 and app.dep[level] == dep_ind]
+                    self.sort_app_list(app_list)
+                    add_count = min(len(app_list), self.dep_capacity - len(dep_list))
+                    for app in app_list[:add_count]:
+                        app.assign_dep(dep_ind)
+                        dep_list.append(app)
+                    self.sort_app_list(dep_list)
+
+    @staticmethod
+    def sort_app_list(app_list: List[Applicant]):
+        app_list.sort(key=lambda app: (-app.gpa, app.name))
+
+    def dep_to_str(self, dep_ind: int):
+        app_str = '\n'.join(map(str, self.dep_lists[dep_ind]))
+        return f'{self.dep_names[dep_ind]}\n{app_str}'
+
+    def __str__(self):
+        return '\n\n'.join(self.dep_to_str(i) for i in range(len(self.dep_names)))
+
+
+print(Distribution(int(input())))
