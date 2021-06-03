@@ -2,10 +2,11 @@ from typing import List
 
 
 class Applicant:
+    finals_reindex = {1, 1, 3, 2, 0}  # index - Distribution.dep_names index; value - finals' index
 
     def __init__(self, raw_data: str):
         self.name = ''
-        self.gpa = 0.0
+        self.finals: List[float] = []
         self.dep: List[int] = []
         self.assigned_dep = -1
         self.parse(raw_data)
@@ -13,8 +14,12 @@ class Applicant:
     def parse(self, raw_data: str):
         ar_data = raw_data.split(' ')
         self.name = ' '.join(ar_data[:2])
-        self.gpa = float(ar_data[2])
-        self.dep = [Distribution.dep_names.index(dep_name) for dep_name in ar_data[3:]]
+        self.finals = self.parse_finals(ar_data)
+        self.dep = [Distribution.dep_names.index(dep_name) for dep_name in ar_data[6:]]
+
+    def parse_finals(self, ar_data: List[str]):
+        raw_finals = [float(x) for x in ar_data[2:6]]
+        return [raw_finals[i] for i in self.finals_reindex]
 
     def assign_dep(self, dep_ind: int):
         """
@@ -24,7 +29,7 @@ class Applicant:
         self.assigned_dep = dep_ind
 
     def __str__(self):
-        return f'{self.name} {self.gpa}'
+        return f'{self.name} {0 if self.assigned_dep == -1 else self.finals[self.assigned_dep]}'
 
 
 class Distribution:
@@ -47,6 +52,8 @@ class Distribution:
             self.applicants = [Applicant(line.rstrip('\n')) for line in file.readlines()]
 
     def distribute(self):
+        # todo: Change this method; it should consider applicant.finals as the first sorting key
+
         for level in range(3):
             for dep_ind in range(len(self.dep_names)):
                 dep_list = self.dep_lists[dep_ind]
